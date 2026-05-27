@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_main">#121B22</color>
+    <color name="bg_card">#1E2A32</color>
+    <color name="green_byd">#00A884</color>
+    <color name="border_color">#2A3942</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_muted">#8696A0</color>
+</resources>
