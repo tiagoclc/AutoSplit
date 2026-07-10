@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
@@ -12,29 +13,53 @@ import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ImageView
 import kotlin.math.abs
 
 /**
- * Serviço que cria um botão flutuante em forma de pílula com duas funções.
+ * Serviço do Botão Flutuante (Pílula).
+ * Correção de Bouncing e alinhamento milimétrico reativo às barras do Android.
  */
 class FloatingService : Service() {
+
+    companion object {
+        @Volatile
+        var isRunning = false
+    }
+
+    private data class ScreenSpecs(
+        val width: Int, val height: Int,
+        val left: Int, val top: Int, val right: Int, val bottom: Int
+    )
 
     private lateinit var windowManager: WindowManager
     private lateinit var pillLayout: LinearLayout
 
+    // Histórico global das barras para evitar loops de reposicionamento (Anti-Bouncing)
+    private var lastInsetsLeft = -1
+    private var lastInsetsTop = -1
+    private var lastInsetsRight = -1
+    private var lastInsetsBottom = -1
+    private var isFirstLayout = true
+
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun getOrientationSuffix(): String {
+        return if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) "_land" else "_port"
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate() {
         super.onCreate()
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        isRunning = true
 
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val prefs = getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
 
-        // Criar o Layout da Pílula (Reduzido para 80% do original)
+        // Inicializa o Contentor com a escala visual de 0.8f
         pillLayout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setBackgroundResource(R.drawable.pill_background)
@@ -44,55 +69,54 @@ class FloatingService : Service() {
             scaleY = 0.8f
         }
 
-        // Lado Esquerdo: Botão de Automação (Rodar Fluxo) - Ícone Cinzento (mesma cor da engrenagem)
+        // Lado Esquerdo: Executar fluxo
         val btnAuto = ImageView(this).apply {
             setImageResource(android.R.drawable.ic_media_play)
-            setColorFilter(Color.WHITE) // Cor padrão para ícones de sistema, igual à engrenagem
-            setPadding(16, 16, 24, 16)
+            setColorFilter(Color.WHITE)
+            setPadding(12, 12, 18, 12)
         }
 
-        // Divisor central (opcional)
         val divider = View(this).apply {
-            layoutParams = LinearLayout.LayoutParams(2, 40)
+            layoutParams = LinearLayout.LayoutParams(2, 32)
             setBackgroundColor(Color.GRAY)
         }
 
-        // Lado Direito: Botão de Configurações
+        // Lado Direito: Configurações
         val btnSettings = ImageView(this).apply {
             setImageResource(android.R.drawable.ic_menu_preferences)
             setColorFilter(Color.WHITE)
-            setPadding(30, 20, 20, 20)
+            setPadding(24, 16, 16, 16)
         }
 
         pillLayout.addView(btnAuto)
         pillLayout.addView(divider)
         pillLayout.addView(btnSettings)
 
-        // Configurações da Janela para ficar por cima de TUDO
+        // Parâmetros de Janela robustos
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or 
-            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            
-            // Obter dimensões da tela para limites
-            val (screenWidth, screenHeight) = getScreenDimensions()
-
-            // Carrega posição persistente
-            x = prefs.getInt("floating_x", 150)
-            y = prefs.getInt("floating_y", 150)
-            
-            // Proteção para não iniciar fora da tela (considerando escala 0.8)
-            x = x.coerceIn(0, screenWidth)
-            y = y.coerceIn(0, screenHeight)
+            val suffix = getOrientationSuffix()
+            x = prefs.getInt("floating_x$suffix", 150)
+            y = prefs.getInt("floating_y$suffix", 150)
         }
 
-        // Lógica de arrastar a pílula com suporte a cliques manuais
+        // Gatilho do Listener: Usado apenas como sinalizador de evento do sistema
+        pillLayout.setOnApplyWindowInsetsListener { _, insets ->
+            pillLayout.post {
+                ajustarPosicaoDentroDosLimites()
+            }
+            insets
+        }
+
+        // Gestão de Arrasto Manual Livre de Conflitos
         pillLayout.setOnTouchListener(object : View.OnTouchListener {
             private var initialX = 0
             private var initialY = 0
@@ -101,7 +125,9 @@ class FloatingService : Service() {
             private var startTime = 0L
 
             override fun onTouch(v: View?, event: MotionEvent): Boolean {
-                val (screenWidth, screenHeight) = getScreenDimensions()
+                val viewWidth = pillLayout.width
+                val viewHeight = pillLayout.height
+                if (viewWidth == 0 || viewHeight == 0) return false
 
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -115,14 +141,16 @@ class FloatingService : Service() {
                     MotionEvent.ACTION_MOVE -> {
                         val newX = initialX + (event.rawX - initialTouchX).toInt()
                         val newY = initialY + (event.rawY - initialTouchY).toInt()
-                        
-                        // Impedir sair da tela
-                        // Consideramos a largura e altura do pillLayout multiplicada pela escala
-                        val scaledWidth = (pillLayout.width * pillLayout.scaleX).toInt()
-                        val scaledHeight = (pillLayout.height * pillLayout.scaleY).toInt()
-                        
-                        params.x = newX.coerceIn(0, screenWidth - scaledWidth-40)
-                        params.y = newY.coerceIn(0, screenHeight - scaledHeight-40)
+
+                        val specs = getGlobalScreenSpecs()
+                        val visualWidth = (viewWidth * pillLayout.scaleX).toInt()
+                        val visualHeight = (viewHeight * pillLayout.scaleY).toInt()
+                        val offsetX = (viewWidth - visualWidth) / 2
+                        val offsetY = (viewHeight - visualHeight) / 2
+
+                        // Limita o movimento baseado na geometria física do momento
+                        params.x = newX.coerceIn(specs.left - offsetX, specs.width - specs.right - viewWidth + offsetX)
+                        params.y = newY.coerceIn(specs.top - offsetY, specs.height - specs.bottom - viewHeight + offsetY)
 
                         windowManager.updateViewLayout(pillLayout, params)
                         return true
@@ -132,18 +160,13 @@ class FloatingService : Service() {
                         val deltaX = abs(event.rawX - initialTouchX)
                         val deltaY = abs(event.rawY - initialTouchY)
 
-                        // Se o movimento foi pequeno e rápido, tratamos como clique manual
                         if (duration < 300 && deltaX < 15 && deltaY < 15) {
                             val touchXInside = event.x
-                            if (touchXInside < (pillLayout.width * 0.8) / 2) {
-                                // Lado Esquerdo: Automação
+                            if (touchXInside < (viewWidth / 2)) {
                                 val app1 = prefs.getString("app1", "") ?: ""
                                 val app2 = prefs.getString("app2", "") ?: ""
-                                val tapX = prefs.getInt("tap_x", 1712)
-                                val tapY = prefs.getInt("tap_y", 1044)
-                                AutomationManager.rodarFluxo(this@FloatingService, app1, app2, tapX, tapY)
+                                AutomationManager.rodarFluxo(this@FloatingService, app1, app2)
                             } else {
-                                // Lado Direito: Configurações
                                 val intent = Intent(this@FloatingService, MainActivity::class.java).apply {
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                     putExtra("FORCE_SETTINGS", true)
@@ -151,10 +174,10 @@ class FloatingService : Service() {
                                 startActivity(intent)
                             }
                         } else {
-                            // Salvar posição após arrastar
+                            val suffix = getOrientationSuffix()
                             getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE).edit().apply {
-                                putInt("floating_x", params.x)
-                                putInt("floating_y", params.y)
+                                putInt("floating_x$suffix", params.x)
+                                putInt("floating_y$suffix", params.y)
                                 apply()
                             }
                         }
@@ -166,23 +189,153 @@ class FloatingService : Service() {
         })
 
         windowManager.addView(pillLayout, params)
+
+        pillLayout.post {
+            isFirstLayout = true
+            ajustarPosicaoDentroDosLimites()
+        }
     }
 
-    private fun getScreenDimensions(): Pair<Int, Int> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val metrics = windowManager.currentWindowMetrics
-            val bounds = metrics.bounds
-            Pair(bounds.width(), bounds.height())
+    /**
+     * Centraliza a inteligência de posicionamento estrito.
+     * Cancela atualizações redundantes removendo o efeito "bouncing".
+     */
+    private fun ajustarPosicaoDentroDosLimites() {
+        if (!::pillLayout.isInitialized || pillLayout.parent == null) return
+
+        val params = pillLayout.layoutParams as WindowManager.LayoutParams
+        val specs = getGlobalScreenSpecs()
+
+        // BLOQUEIO ANTI-BOUNCING: Se o estado real das barras não mudou, interrompe o ciclo
+        if (specs.left == lastInsetsLeft && specs.top == lastInsetsTop &&
+            specs.right == lastInsetsRight && specs.bottom == lastInsetsBottom && !isFirstLayout) {
+            return
+        }
+
+        val viewWidth = pillLayout.width
+        val viewHeight = pillLayout.height
+        if (viewWidth == 0 || viewHeight == 0) return
+
+        val visualWidth = (viewWidth * pillLayout.scaleX).toInt()
+        val visualHeight = (viewHeight * pillLayout.scaleY).toInt()
+        val offsetX = (viewWidth - visualWidth) / 2
+        val offsetY = (viewHeight - visualHeight) / 2
+
+        // Fronteiras matemáticas exatas compensando os 10% de margem invisível do Scale
+        val minX = specs.left - offsetX
+        val maxX = specs.width - specs.right - viewWidth + offsetX
+        val minY = specs.top - offsetY
+        val maxY = specs.height - specs.bottom - viewHeight + offsetY
+
+        if (isFirstLayout) {
+            params.x = params.x.coerceIn(minX, maxX)
+            params.y = params.y.coerceIn(minY, maxY)
+            isFirstLayout = false
         } else {
-            val displayMetrics = DisplayMetrics()
-            @Suppress("DEPRECATION")
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            Pair(displayMetrics.widthPixels, displayMetrics.heightPixels)
+            // Se a barra superior colapsou ou expandiu, ajusta o delta correspondente
+            if (specs.top != lastInsetsTop && lastInsetsTop != -1) {
+                params.y += (specs.top - lastInsetsTop)
+            }
+            // Se o botão estava colado na barra inferior e ela subiu/desceu, acompanha o frame
+            if (specs.bottom != lastInsetsBottom && lastInsetsBottom != -1) {
+                val margemAntigaDeColagem = specs.height - lastInsetsBottom - viewHeight + offsetY
+                if (abs(params.y - margemAntigaDeColagem) <= 25) {
+                    params.y = maxY
+                }
+            }
+        }
+
+        // Aplicação sob coação estrita das margens de segurança
+        params.x = params.x.coerceIn(minX, maxX)
+        params.y = params.y.coerceIn(minY, maxY)
+
+        // Salva o estado atual para o próximo ciclo comparativo
+        lastInsetsLeft = specs.left
+        lastInsetsTop = specs.top
+        lastInsetsRight = specs.right
+        lastInsetsBottom = specs.bottom
+
+        windowManager.updateViewLayout(pillLayout, params)
+    }
+
+    /**
+     * Mapeia de forma infalível a resolução do visor e o tamanho das barras de sistema
+     * cruzando métricas em tempo de execução. Funciona perfeitamente do Android 10 ao 14+.
+     */
+    private fun getGlobalScreenSpecs(): ScreenSpecs {
+        val display = windowManager.defaultDisplay
+        val realMetrics = DisplayMetrics()
+        val usableMetrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        display.getRealMetrics(realMetrics)
+        @Suppress("DEPRECATION")
+        display.getMetrics(usableMetrics)
+
+        val totalWidth = realMetrics.widthPixels
+        val totalHeight = realMetrics.heightPixels
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val metrics = windowManager.currentWindowMetrics
+                val insets = metrics.windowInsets.getInsets(WindowInsets.Type.systemBars())
+
+                // Correção para Roms integradas/customizadas: validação cruzada do Top e Bottom
+                val topInset = insets.top.coerceAtLeast(
+                    if (totalHeight > usableMetrics.heightPixels && usableMetrics.heightPixels > 0) getStatusBarHeight() else 0
+                )
+                val diferencaFisicaInferior = totalHeight - usableMetrics.heightPixels - (if (topInset > 0) getStatusBarHeight() else 0)
+                val bottomInset = insets.bottom.coerceAtLeast(diferencaFisicaInferior.coerceAtLeast(0))
+
+                return ScreenSpecs(totalWidth, totalHeight, insets.left, topInset, insets.right, bottomInset)
+            } catch (e: Exception) {
+                // Se falhar o WindowMetrics do Android 11, salta para o fallback clássico abaixo
+            }
+        }
+
+        // Algoritmo de Fallback Clássico (Altamente fiável para Android 10 e sistemas BYD DiLink)
+        val statusBarHeight = getStatusBarHeight()
+        val temBarrasVerticais = totalHeight > usableMetrics.heightPixels
+        val temBarrasHorizontais = totalWidth > usableMetrics.widthPixels
+
+        val top = if (temBarrasVerticais) statusBarHeight else 0
+        val bottom = if (temBarrasVerticais) (totalHeight - usableMetrics.heightPixels - top).coerceAtLeast(0) else 0
+        val right = if (temBarrasHorizontais) (totalWidth - usableMetrics.widthPixels).coerceAtLeast(0) else 0
+        val left = 0
+
+        return ScreenSpecs(totalWidth, totalHeight, left, top, right, bottom)
+    }
+
+    private fun getStatusBarHeight(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (::pillLayout.isInitialized) {
+            pillLayout.post {
+                val prefs = getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
+                val suffix = if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) "_land" else "_port"
+                val params = pillLayout.layoutParams as WindowManager.LayoutParams
+
+                params.x = prefs.getInt("floating_x$suffix", 150)
+                params.y = prefs.getInt("floating_y$suffix", 150)
+
+                // Força o reset para aceitar as dimensões da nova orientação sem misturar deltas
+                isFirstLayout = true
+                lastInsetsLeft = -1
+                lastInsetsTop = -1
+                lastInsetsRight = -1
+                lastInsetsBottom = -1
+
+                ajustarPosicaoDentroDosLimites()
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        isRunning = false
         if (::pillLayout.isInitialized) {
             windowManager.removeView(pillLayout)
         }

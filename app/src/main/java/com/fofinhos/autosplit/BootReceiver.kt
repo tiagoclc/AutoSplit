@@ -8,9 +8,9 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (Intent.ACTION_BOOT_COMPLETED == intent.action || Intent.ACTION_LOCKED_BOOT_COMPLETED == intent.action) {
             val prefs = context.getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
-            val autoStartEnabled = prefs.getBoolean("boot_auto_start", true)
-            
-            if (autoStartEnabled) {
+
+            // Se o auto start estiver habilitado, inicia a MainActivity diretamente
+            if (prefs.getBoolean("boot_auto_start", true)) {
                 val i = Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     putExtra("AUTO_START", true)

@@ -6,107 +6,133 @@
     android:background="#121B22"
     android:orientation="horizontal"
     android:baselineAligned="false"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1.6"
-        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingEnd="16dp">
+        android:paddingEnd="12dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="AutoSplit"
             android:textColor="#FFFFFF"
-            android:textSize="28sp"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="12dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="8dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 app:cardBackgroundColor="#1E2A32"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="14dp"
                 app:strokeWidth="0dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="12dp"
+                    android:weightSum="6">
+
                     <ImageView
                         android:id="@+id/img_app1_icon"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.2"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
+
                     <TextView
                         android:id="@+id/txt_app1_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.2"
                         android:text="App 1 (Esquerda)"
                         android:textColor="#E9EDEF"
-                        android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="12dp"/>
+                        android:gravity="center"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="12sp"
+                        app:autoSizeMaxTextSize="24sp"
+                        android:layout_marginTop="4dp"/>
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app1"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.8"
                         android:text="Selecionar"
-                        android:textColor="#00A884"/>
+                        android:textColor="#00A884"
+                        android:gravity="center"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 app:cardBackgroundColor="#1E2A32"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="14dp"
                 app:strokeWidth="0dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="12dp"
+                    android:weightSum="6">
+
                     <ImageView
                         android:id="@+id/img_app2_icon"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.2"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
+
                     <TextView
                         android:id="@+id/txt_app2_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.2"
                         android:text="App 2 (Direita)"
                         android:textColor="#E9EDEF"
-                        android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="12dp"/>
+                        android:gravity="center"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="12sp"
+                        app:autoSizeMaxTextSize="24sp"
+                        android:layout_marginTop="4dp"/>
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app2"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.8"
                         android:text="Selecionar"
-                        android:textColor="#00A884"/>
+                        android:textColor="#00A884"
+                        android:gravity="center"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -114,7 +140,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="8dp"
             app:cardBackgroundColor="#1E2A32"
             app:cardCornerRadius="12dp"
             app:strokeWidth="1dp"
@@ -123,21 +149,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
-
+                android:padding="12dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Coordenadas do Input Tap:"
+                    android:text="Coordenadas - Modo Paisagem:"
                     android:textColor="#8696A0"
-                    android:layout_marginBottom="8dp"/>
-
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
-
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -147,14 +172,13 @@
                         app:hintTextColor="#00A884"
                         app:boxStrokeColor="#00A884">
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edit_tap_x"
+                            android:id="@+id/edit_tap_x_land"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
                             android:textColor="#FFFFFF"
                             android:text="1712"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -165,21 +189,29 @@
                         app:hintTextColor="#00A884"
                         app:boxStrokeColor="#00A884">
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edit_tap_y"
+                            android:id="@+id/edit_tap_y_land"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
                             android:textColor="#FFFFFF"
                             android:text="1044"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_restore_dolphin"
+                        android:id="@+id/btn_restore_dolphin_land"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Restaurar padrão dolphin"
+                        android:layout_marginStart="4dp"
+                        android:text="Padrão"
+                        android:textColor="#00A884"
+                        android:textSize="12sp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_capture_click_land"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Capturar"
                         android:textColor="#00A884"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -189,7 +221,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             app:cardBackgroundColor="#1E2A32"
             app:cardCornerRadius="12dp"
             app:strokeWidth="1dp"
@@ -197,35 +229,158 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:padding="12dp">
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Início Automático no Boot"
-                    android:textColor="#E9EDEF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switch_auto_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:thumbTint="@color/green_byd"
-                    app:trackTint="@color/bg_card"/>
+                    android:text="Coordenadas - Modo Retrato:"
+                    android:textColor="#8696A0"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="X"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                        app:hintTextColor="#00A884"
+                        app:boxStrokeColor="#00A884">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_tap_x_port"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="#FFFFFF"
+                            android:text="1044"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:hint="Y"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                        app:hintTextColor="#00A884"
+                        app:boxStrokeColor="#00A884">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_tap_y_port"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="#FFFFFF"
+                            android:text="1712"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_restore_dolphin_port"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Padrão"
+                        android:textColor="#00A884"
+                        android:textSize="12sp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_capture_click_port"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Capturar"
+                        android:textColor="#00A884"
+                        android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="12dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                app:cardBackgroundColor="#1E2A32"
+                app:cardCornerRadius="10dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#2A3942">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Rodar no boot"
+                        android:textColor="#E9EDEF"
+                        android:textSize="13sp"
+                        android:textStyle="bold"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_auto_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/green_byd"
+                        app:trackTint="@color/bg_card"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                app:cardBackgroundColor="#1E2A32"
+                app:cardCornerRadius="10dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#2A3942">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Modo Carro"
+                        android:textColor="#E9EDEF"
+                        android:textSize="13sp"
+                        android:textStyle="bold"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_car_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/green_byd"
+                        app:trackTint="@color/bg_card"
+                        android:checked="true"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_run_automation"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:text="Rodar"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:backgroundTint="#00A884"
-            app:cornerRadius="30dp"/>
+            app:cornerRadius="25dp"/>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -239,21 +394,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Status do Sistema"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="12dp"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#2A3942"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="12dp"/>
 
             <TextView
                 android:id="@+id/txt_system_status"
@@ -261,8 +416,8 @@
                 android:layout_height="wrap_content"
                 android:text="• Verificando sistemas..."
                 android:textColor="#8696A0"
-                android:textSize="14sp"
-                android:lineSpacingExtra="8dp"/>
+                android:textSize="13sp"
+                android:lineSpacingExtra="6dp"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
