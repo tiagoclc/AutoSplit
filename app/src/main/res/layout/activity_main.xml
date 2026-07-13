@@ -52,7 +52,7 @@
                         android:id="@+id/img_app1_icon"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.2"
+                        android:layout_weight="1"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
 
@@ -60,7 +60,7 @@
                         android:id="@+id/txt_app1_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.2"
+                        android:layout_weight="1"
                         android:text="App 1 (Esquerda)"
                         android:textColor="#E9EDEF"
                         android:textStyle="bold"
@@ -70,16 +70,19 @@
                         app:autoSizeTextType="uniform"
                         app:autoSizeMinTextSize="12sp"
                         app:autoSizeMaxTextSize="24sp"
-                        android:layout_marginTop="4dp"/>
+                        android:layout_marginTop="2dp"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app1"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.8"
+                        android:layout_weight="2.5"
                         android:text="Selecionar"
                         android:textColor="#00A884"
+                        android:padding="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:gravity="center"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -104,7 +107,7 @@
                         android:id="@+id/img_app2_icon"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.2"
+                        android:layout_weight="1"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
 
@@ -112,7 +115,7 @@
                         android:id="@+id/txt_app2_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.2"
+                        android:layout_weight="1"
                         android:text="App 2 (Direita)"
                         android:textColor="#E9EDEF"
                         android:textStyle="bold"
@@ -122,16 +125,19 @@
                         app:autoSizeTextType="uniform"
                         app:autoSizeMinTextSize="12sp"
                         app:autoSizeMaxTextSize="24sp"
-                        android:layout_marginTop="4dp"/>
+                        android:layout_marginTop="2dp"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app2"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.8"
+                        android:layout_weight="2.5"
                         android:text="Selecionar"
                         android:textColor="#00A884"
+                        android:padding="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:gravity="center"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -304,7 +310,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="8dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"

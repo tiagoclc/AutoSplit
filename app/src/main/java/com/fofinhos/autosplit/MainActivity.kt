@@ -22,7 +22,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -146,25 +148,57 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun carregarAplicativosDoSistema() {
-        val pm = packageManager
-        val mainIntent = Intent(Intent.ACTION_MAIN, null).apply { addCategory(Intent.CATEGORY_LAUNCHER) }
-        val resolveInfos = pm.queryIntentActivities(mainIntent, 0)
+        lifecycleScope.launch(Dispatchers.Default) {
+            val pm = packageManager
+            val mainIntent = Intent(Intent.ACTION_MAIN, null).apply { addCategory(Intent.CATEGORY_LAUNCHER) }
+            val resolveInfos = pm.queryIntentActivities(mainIntent, 0)
 
-        appList.clear()
-        for (info in resolveInfos) {
-            val pkg = info.activityInfo.packageName
-            if (pkg == packageName) continue
-            val label = info.loadLabel(pm).toString()
-            val icon = info.loadIcon(pm)
-            appList.add(AppConfigData(pkg, label, icon))
+            val tempAppList = mutableListOf<AppConfigData>()
+            for (info in resolveInfos) {
+                val pkg = info.activityInfo.packageName
+                if (pkg == packageName) continue
+                val label = info.loadLabel(pm).toString()
+                val icon = info.loadIcon(pm)
+                tempAppList.add(AppConfigData(pkg, label, icon))
+            }
+            tempAppList.sortBy { it.label.lowercase() }
+
+            withContext(Dispatchers.Main) {
+                appList.clear()
+                appList.addAll(tempAppList)
+                // Atualiza os ícones dos apps já selecionados caso tenham carregado agora
+                reaplicarSelecoes()
+            }
         }
-        appList.sortBy { it.label.lowercase() }
     }
 
+    private fun reaplicarSelecoes() {
+        val prefs = getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
+        val savedApp1 = prefs.getString("app1", null)
+        val savedApp2 = prefs.getString("app2", null)
+        
+        savedApp1?.let { pkg ->
+            appList.find { it.packageName == pkg }?.let { app ->
+                selectedApp1 = app
+                imgApp1.setImageDrawable(app.icon)
+                txtApp1.text = app.label
+            }
+        }
+        savedApp2?.let { pkg ->
+            appList.find { it.packageName == pkg }?.let { app ->
+                selectedApp2 = app
+                imgApp2.setImageDrawable(app.icon)
+                txtApp2.text = app.label
+            }
+        }
+    }
+
+    private var statusUpdateJob: Job? = null
     private fun atualizarStatusSistemaDinamicamente() {
         txtSystemStatus = findViewById(R.id.txt_system_status)
-        lifecycleScope.launch(Dispatchers.IO) {
-            while (true) {
+        statusUpdateJob?.cancel()
+        statusUpdateJob = lifecycleScope.launch(Dispatchers.IO) {
+            while (isActive) {
                 val status = StringBuilder()
                 val adbAtivo = try {
                     java.net.Socket("127.0.0.1", 5555).use { true }
@@ -352,8 +386,8 @@ class MainActivity : AppCompatActivity() {
 
     // CORREÇÃO: Removidos parâmetros redundantes de inteiros da assinatura local
     private fun dispararEFecharAplicativo(app1: String, app2: String) {
-        startService(Intent(this, FloatingService::class.java))
         AutomationManager.rodarFluxo(this, app1, app2)
+        startService(Intent(this, FloatingService::class.java))
         finish()
     }
 
@@ -383,5 +417,11 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         unregisterReceiver(captureReceiver)
         unregisterReceiver(countdownReceiver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        statusUpdateJob?.cancel()
+        AdbShellExecutor(this).fecharConexao()
     }
 }

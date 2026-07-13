@@ -53,17 +53,7 @@ object AutomationManager {
                     adbExecutor.executarSync("am broadcast -a android.intent.action.DOCK_EVENT --ei android.intent.extra.DOCK_STATE 0")
                 }
 
-                // 1. Abre ou traz à tona o Primeiro App
-                Log.d(TAG, "Ativando App 1: $app1")
-                val carFlag = if (carModeEnabled) "-c android.intent.category.CAR_DOCK" else ""
-                val extraFlags = if (carModeEnabled) "--ei android.intent.extra.DOCK_STATE 2 --ez android.intent.extra.CAR_MODE true" else ""
 
-                // Usamos --windowingMode 1 (Fullscreen) para permitir o Split Screen nativo do DiLink
-                // Adicionamos extras de DOCK_STATE e CAR_MODE para tentar forçar a interface do app
-                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 5 --activity-brought-to-front")
-
-                // Espera o app carregar ou estabilizar na frente
-                delay(3000)
 
                 // =========================================================================
                 // RECONHECIMENTO DINÂMICO DE ORIENTAÇÃO EM TEMPO REAL (Antes do Toque)
@@ -79,6 +69,20 @@ object AutomationManager {
                 }
 
                 Log.d(TAG, "Orientação real detectada: ${if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) "Retrato" else "Paisagem"}")
+
+
+                // 1. Abre ou traz à tona o Primeiro App
+                Log.d(TAG, "Ativando App 1: $app1")
+                val carFlag = if (carModeEnabled) "-c android.intent.category.CAR_DOCK" else ""
+                val extraFlags = if (carModeEnabled) "--ei android.intent.extra.DOCK_STATE 2 --ez android.intent.extra.CAR_MODE true" else ""
+
+                // Usamos --windowingMode 1 (Fullscreen) para permitir o Split Screen nativo do DiLink
+                // Adicionamos extras de DOCK_STATE e CAR_MODE para tentar forçar a interface do app
+                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 1 --activity-brought-to-front")
+
+                // Espera o app carregar ou estabilizar na frente
+                delay(2000)
+
                 // =========================================================================
 
                 // 2. Executa o toque (TAP) usando as coordenadas dinâmicas resolvidas acima
@@ -86,15 +90,16 @@ object AutomationManager {
                 adbExecutor.executarSync("input tap $tapX $tapY")
 
                 // Espera a animação do sistema
-                delay(2000)
+                delay(2500)
 
                 // 3. Abre ou traz à tona o Segundo App
                 Log.d(TAG, "Ativando App 2: $app2")
-                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app2 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 5 --activity-brought-to-front")
+                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app2 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 1 --activity-brought-to-front")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
                 }
+                delay(1000)
 
                 // Executa a limpeza (reset do modo carro) após a automação terminar
                 limparDisplays(appContext)

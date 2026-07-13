@@ -113,6 +113,17 @@ class AdbShellExecutor(private val context: Context) {
             }
         }
     }
+
+    fun fecharConexao() {
+        synchronized(travaConexao) {
+            try {
+                dadbCompartilhado?.close()
+                dadbCompartilhado = null
+            } catch (e: Exception) {
+                Log.w(TAG, "Erro ao fechar conexão ADB: ${e.message}")
+            }
+        }
+    }
     
     private fun portaAdbAberta(): Boolean {
         return try {
