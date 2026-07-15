@@ -70,9 +70,10 @@ object AutomationManager {
                     if [ ! -z "${d}TASK_ID" ]; then
                         log -t AutoSplitManager "App1 em segundo plano (Task: ${d}TASK_ID). Inicializando GhostActivity para criar a Stack...";
                         am start --user 0 --windowingMode 3 -n com.fofinhos.autosplit/.GhostActivity;
+                        STACK_ID=${d}(am stack list | awk '/Stack id=/ {split(${d}2, a, "="); id=a[2]} /mWindowingMode=split-screen-primary/ {print id; exit}')
                         sleep 1;
                         log -t AutoSplitManager "Movendo App1 para stack 3...";
-                        am start --user 0 -f 0x10008000 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
+                        am stack move-task ${d}TASK_ID ${d}STACK_ID true
                     else
                         log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
                         am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
@@ -89,6 +90,21 @@ object AutomationManager {
                 // =========================================================================
                 Log.d(TAG, "Processando App 2: $app2")
 
+
+                val cmdApp2 = """
+                    TASK_ID=${d}(dumpsys activity activities | awk '/TaskRecord|Task\{/{t=${d}0} index(${d}0, "$app2") > 0 {print t; exit}' | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
+                    if [ ! -z "${d}TASK_ID" ]; then
+                        l
+                        STACK_ID=${d}(am stack list | awk '/Stack id=/ {split(${d}2, a, "="); id=a[2]} /mWindowingMode=split-screen-secondary/ {print id; exit}')
+                        log -t AutoSplitManager "Movendo App2 para stack 3...";
+                        am stack move-task ${d}TASK_ID ${d}STACK_ID true
+                    else
+                        log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
+                        am start --user 0 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front                    
+                    fi
+                """.trimIndent().replace("\n", " ")
+
+                adbExecutor.executarSync(cmdApp1)
                 adbExecutor.executarSync("am start --user 0 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front")
 
                 withContext(Dispatchers.Main) {
