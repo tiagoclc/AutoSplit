@@ -78,7 +78,7 @@ object AutomationManager {
 
                 // Usamos --windowingMode 1 (Fullscreen) para permitir o Split Screen nativo do DiLink
                 // Adicionamos extras de DOCK_STATE e CAR_MODE para tentar forçar a interface do app
-                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 1 --activity-brought-to-front")
+                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 3 --activity-brought-to-front")
 
                 // Espera o app carregar ou estabilizar na frente
                 delay(2000)
@@ -112,6 +112,8 @@ object AutomationManager {
             }
         }
     }
+
+
 
     fun limparDisplays(context: Context) {
         val appContext = context.applicationContext
