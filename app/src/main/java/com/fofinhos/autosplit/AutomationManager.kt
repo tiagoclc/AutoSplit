@@ -72,7 +72,7 @@ object AutomationManager {
                         am start --user 0 --windowingMode 3 -n com.fofinhos.autosplit/.GhostActivity;
                         STACK_ID=${d}(am stack list | awk '/Stack id=/ {split(${d}2, a, "="); id=a[2]} /mWindowingMode=split-screen-primary/ {print id; exit}')
                         sleep 1;
-                        log -t AutoSplitManager "Movendo App1 para stack 3...";
+                        log -t AutoSplitManager "Movendo App1 para stack do split primary...";
                         am stack move-task ${d}TASK_ID ${d}STACK_ID true
                     else
                         log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
@@ -96,7 +96,7 @@ object AutomationManager {
                     if [ ! -z "${d}TASK_ID" ]; then
                         l
                         STACK_ID=${d}(am stack list | awk '/Stack id=/ {split(${d}2, a, "="); id=a[2]} /mWindowingMode=split-screen-secondary/ {print id; exit}')
-                        log -t AutoSplitManager "Movendo App2 para stack 3...";
+                        log -t AutoSplitManager "Movendo App2 para stack do split secondary...";
                         am stack move-task ${d}TASK_ID ${d}STACK_ID true
                     else
                         log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
