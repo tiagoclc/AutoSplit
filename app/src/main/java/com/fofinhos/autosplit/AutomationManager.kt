@@ -71,34 +71,30 @@ object AutomationManager {
 //                Log.d(TAG, "Orientação real detectada: ${if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) "Retrato" else "Paisagem"}")
 //
 
-                // 1. Abre ou traz à tona o Primeiro App
-                Log.d(TAG, "Ativando App 1: $app1")
-                val carFlag = if (carModeEnabled) "-c android.intent.category.CAR_DOCK" else ""
-                val extraFlags = if (carModeEnabled) "--ei android.intent.extra.DOCK_STATE 2 --ez android.intent.extra.CAR_MODE true" else ""
+                // =========================================================================
+// 1. Abre o Primeiro App no modo SPLIT_SCREEN_PRIMARY (3)
+// =========================================================================
+                Log.d(TAG, "Ativando App 1 no lado primário: $app1")
 
-                // Usamos --windowingMode 1 (Fullscreen) para permitir o Split Screen nativo do DiLink
-                // Adicionamos extras de DOCK_STATE e CAR_MODE para tentar forçar a interface do app
-//                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 3 --activity-brought-to-front")
-                adbExecutor.executarSync("am start --user 0 -n $(cmd package resolve-activity --brief $app1 | tail -n 1) --windowingMode 3 --activity-brought-to-front")
+// Resolve o componente exato do Launcher (com a categoria correta)
+                val cmdResolve1 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1"
 
+// Executa o am start com windowingMode 3 (SPLIT_SCREEN_PRIMARY)
+                adbExecutor.executarSync("am start --user 0 --windowingMode 3 -n \$($cmdResolve1)")
 
-                // Espera o app carregar ou estabilizar na frente
+// Espera o sistema criar o dock e estabilizar a metade do ecrã
                 delay(2000)
 
-                // =========================================================================
+// =========================================================================
+// 2. Abre o Segundo App normalmente (ele vai cair no espaço adjacente livre)
+// =========================================================================
+                Log.d(TAG, "Ativando App 2 no lado adjacente: $app2")
 
-                // 2. Executa o toque (TAP) usando as coordenadas dinâmicas resolvidas acima
-//                Log.d(TAG, "Executando TAP via ADB para Split Screen em $tapX, $tapY")
-//                adbExecutor.executarSync("input tap $tapX $tapY")
-//
-//                // Espera a animação do sistema
-//                delay(2500)
+// Resolve o componente exato do segundo Launcher
+                val cmdResolve2 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1"
 
-                // 3. Abre ou traz à tona o Segundo App
-                Log.d(TAG, "Ativando App 2: $app2")
-//                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app2 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 4 --activity-brought-to-front")
-                adbExecutor.executarSync("am start --user 0 -n $(cmd package resolve-activity --brief $app2 | tail -n 1) --windowingMode 4 --activity-brought-to-front")
-//                adbExecutor.executarSync("monkey -p $app2 -c android.intent.category.LAUNCHER 1")
+// Abre normalmente (SEM windowingMode). O Android coloca-o automaticamente no lado livre!
+                adbExecutor.executarSync("am start --user 0 -n \$($cmdResolve2) --activity-brought-to-front")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
