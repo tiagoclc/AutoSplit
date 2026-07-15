@@ -30,6 +30,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".GhostActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:resizeableActivity="true"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:exported="true" />
+
         <service
             android:name=".FloatingService"
             android:enabled="true"

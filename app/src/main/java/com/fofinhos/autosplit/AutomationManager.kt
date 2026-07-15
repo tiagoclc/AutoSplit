@@ -11,8 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Gerencia a automação simples: abre apps e executa comandos de toque (TAP).
- * Identifica a orientação física da tela em tempo real antes de desferir o clique.
+ * Gerencia a automação inteligente em split-screen.
+ * Identifica se os aplicativos já estão abertos em segundo plano para preservar o seu estado.
+ * Só inicializa a GhostActivity se for estritamente necessário (App 1 em background).
  */
 object AutomationManager {
 
@@ -36,7 +37,7 @@ object AutomationManager {
                 val carModeEnabled = prefs.getBoolean("car_mode_enabled", true)
                 val adbExecutor = AdbShellExecutor(appContext)
 
-                Log.d(TAG, "Iniciando fluxo simples de automação. CarMode: $carModeEnabled")
+                Log.d(TAG, "Iniciando fluxo inteligente de automação. CarMode: $carModeEnabled")
 
                 if (carModeEnabled) {
                     // Forçar o sistema a entrar em "Modo Carro" de forma mais robusta via UiModeManager.
@@ -53,74 +54,46 @@ object AutomationManager {
                     adbExecutor.executarSync("am broadcast -a android.intent.action.DOCK_EVENT --ei android.intent.extra.DOCK_STATE 0")
                 }
 
-
-
-                // =========================================================================
-                // RECONHECIMENTO DINÂMICO DE ORIENTAÇÃO EM TEMPO REAL (Antes do Toque)
-                // =========================================================================
-//                val currentOrientation = appContext.resources.configuration.orientation
-//
-//                val (tapX, tapY) = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//                    // Se a tela estiver em pé, busca as coordenadas salvas no Card Retrato
-//                    Pair(prefs.getInt("tap_x_port", 1044), prefs.getInt("tap_y_port", 1712))
-//                } else {
-//                    // Se estiver deitada, busca as coordenadas salvas no Card Paisagem
-//                    Pair(prefs.getInt("tap_x_land", 1712), prefs.getInt("tap_y_land", 1044))
-//                }
-//
-//                Log.d(TAG, "Orientação real detectada: ${if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) "Retrato" else "Paisagem"}")
-//
-
-                // =========================================================================
-// 1. Definimos uma constante rápida para o caractere de cifrão.
-// Isto impede que o compilador do Kotlin tente ler as variáveis do Shell como variáveis Kotlin.
+                // Constante para evitar que o Kotlin interpole variáveis de ambiente do Shell do Android
                 val d = "$"
 
-// =========================================================================
-// 1. Gerir o APP 1 (Lado Primário - Stack 3)
-// =========================================================================
+                // =========================================================================
+                // 1. GERIR O APP 1 (Lado Primário - Stack 3)
+                // =========================================================================
                 Log.d(TAG, "Processando App 1: $app1")
 
+                // Este script em lote faz toda a tomada de decisão no terminal do Android:
+                // - Se o App 1 está aberto: abre a GhostActivity, espera 1s (sleep) e move o App 1.
+                // - Se o App 1 está fechado: abre-o diretamente em split-screen (com windowingMode 3).
                 val cmdApp1 = """
-    TASK_ID=${d}(dumpsys activity activities | grep -E "(TaskRecord|Task).*#.*$app1" | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
-    if [ ! -z "${d}TASK_ID" ]; then
-        echo "App1 em segundo plano. Task ID: ${d}TASK_ID. Movendo para split...";
-        am stack move-task ${d}TASK_ID 3 true;
-    else
-        echo "App1 fechado. Iniciando do zero...";
-        am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
-    fi
-""".trimIndent().replace("\n", " ")
+                    TASK_ID=${d}(dumpsys activity activities | awk '/TaskRecord|Task\{/{t=${d}0} index(${d}0, "$app1") > 0 {print t; exit}' | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
+                    if [ ! -z "${d}TASK_ID" ]; then
+                        log -t AutoSplitManager "App1 em segundo plano (Task: ${d}TASK_ID). Inicializando GhostActivity para criar a Stack...";
+                        am start --user 0 --windowingMode 3 -n com.fofinhos.autosplit/.GhostActivity;
+                        sleep 1;
+                        log -t AutoSplitManager "Movendo App1 para stack 3...";
+                        am stack move-task ${d}TASK_ID 3 true;
+                    else
+                        log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
+                        am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
+                    fi
+                """.trimIndent().replace("\n", " ")
 
                 adbExecutor.executarSync(cmdApp1)
 
-// Tempo para o sistema reorganizar as janelas e criar o dock
+                // Tempo para o sistema processar a criação da janela e estabilizar o lado esquerdo
                 delay(1500)
 
-// =========================================================================
-// 2. Gerir o APP 2 (Lado Secundário - Stack 4)
-// =========================================================================
+                // =========================================================================
+                // 2. GERIR O APP 2 (Lado Secundário - Stack 4)
+                // =========================================================================
                 Log.d(TAG, "Processando App 2: $app2")
 
-                val cmdApp2 = """
-    TASK_ID=${d}(dumpsys activity activities | grep -E "(TaskRecord|Task).*#.*$app2" | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
-    if [ ! -z "${d}TASK_ID" ]; then
-        echo "App2 em segundo plano. Task ID: ${d}TASK_ID. Movendo para split...";
-        am stack move-task ${d}TASK_ID 4 true;
-    else
-        echo "App2 fechado. Iniciando do zero...";
-        am start --user 0 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front;
-    fi
-""".trimIndent().replace("\n", " ")
+                adbExecutor.executarSync("am start --user 0 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front")
 
-                adbExecutor.executarSync(cmdApp2)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
                 }
-//                delay(1000)
-//
-//                // Executa a limpeza (reset do modo carro) após a automação terminar
-//                limparDisplays(appContext)
 
             } catch (e: Throwable) {
                 Log.e(TAG, "Erro na automação: ${e.message}", e)
@@ -130,8 +103,6 @@ object AutomationManager {
             }
         }
     }
-
-
 
     fun limparDisplays(context: Context) {
         val appContext = context.applicationContext
