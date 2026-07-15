@@ -106,10 +106,10 @@ class MainActivity : AppCompatActivity() {
         val savedApp1 = prefs.getString("app1", null)
         val savedApp2 = prefs.getString("app2", null)
 
-        val savedTapXLand = prefs.getInt("tap_x_land", -1)
-        val savedTapYLand = prefs.getInt("tap_y_land", -1)
-        val savedTapXPort = prefs.getInt("tap_x_port", -1)
-        val savedTapYPort = prefs.getInt("tap_y_port", -1)
+//        val savedTapXLand = prefs.getInt("tap_x_land", -1)
+//        val savedTapYLand = prefs.getInt("tap_y_land", -1)
+//        val savedTapXPort = prefs.getInt("tap_x_port", -1)
+//        val savedTapYPort = prefs.getInt("tap_y_port", -1)
 
         val bootAutoStart = prefs.getBoolean("boot_auto_start", true)
         val forcarConfiguracoes = intent.getBooleanExtra("FORCE_SETTINGS", false)
@@ -118,8 +118,8 @@ class MainActivity : AppCompatActivity() {
         // Valida se todos os parâmetros cruciais de ambos os modos existem para rodar direto
         val deveExecutarDireto = !forcarConfiguracoes &&
                 savedApp1 != null && savedApp2 != null &&
-                savedTapXLand != -1 && savedTapYLand != -1 &&
-                savedTapXPort != -1 && savedTapYPort != -1 &&
+//                savedTapXLand != -1 && savedTapYLand != -1 &&
+//                savedTapXPort != -1 && savedTapYPort != -1 &&
                 (!isFromBoot || bootAutoStart)
 
         if (deveExecutarDireto) {
@@ -237,16 +237,16 @@ class MainActivity : AppCompatActivity() {
         btnSelect2 = findViewById(R.id.btn_select_app2)
         btnRun = findViewById(R.id.btn_run_automation)
 
-        // Mapeamento dos novos IDs do Layout inflado
-        editTapXLand = findViewById(R.id.edit_tap_x_land)
-        editTapYLand = findViewById(R.id.edit_tap_y_land)
-        btnRestoreDolphinLand = findViewById(R.id.btn_restore_dolphin_land)
-        btnCaptureClickLand = findViewById(R.id.btn_capture_click_land)
-
-        editTapXPort = findViewById(R.id.edit_tap_x_port)
-        editTapYPort = findViewById(R.id.edit_tap_y_port)
-        btnRestoreDolphinPort = findViewById(R.id.btn_restore_dolphin_port)
-        btnCaptureClickPort = findViewById(R.id.btn_capture_click_port)
+//        // Mapeamento dos novos IDs do Layout inflado
+//        editTapXLand = findViewById(R.id.edit_tap_x_land)
+//        editTapYLand = findViewById(R.id.edit_tap_y_land)
+//        btnRestoreDolphinLand = findViewById(R.id.btn_restore_dolphin_land)
+//        btnCaptureClickLand = findViewById(R.id.btn_capture_click_land)
+//
+//        editTapXPort = findViewById(R.id.edit_tap_x_port)
+//        editTapYPort = findViewById(R.id.edit_tap_y_port)
+//        btnRestoreDolphinPort = findViewById(R.id.btn_restore_dolphin_port)
+//        btnCaptureClickPort = findViewById(R.id.btn_capture_click_port)
 
         switchAutoStart = findViewById(R.id.switch_auto_start)
         switchCarMode = findViewById(R.id.switch_car_mode)
@@ -254,10 +254,10 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
 
         // Inicializa os inputs com os valores salvos ou padrões corretos de fábrica do carro
-        editTapXLand.setText(prefs.getInt("tap_x_land", 1712).toString())
-        editTapYLand.setText(prefs.getInt("tap_y_land", 1044).toString())
-        editTapXPort.setText(prefs.getInt("tap_x_port", 1044).toString())
-        editTapYPort.setText(prefs.getInt("tap_y_port", 1712).toString())
+//        editTapXLand.setText(prefs.getInt("tap_x_land", 1712).toString())
+//        editTapYLand.setText(prefs.getInt("tap_y_land", 1044).toString())
+//        editTapXPort.setText(prefs.getInt("tap_x_port", 1044).toString())
+//        editTapYPort.setText(prefs.getInt("tap_y_port", 1712).toString())
 
         switchAutoStart.isChecked = prefs.getBoolean("boot_auto_start", true)
         switchCarMode.isChecked = prefs.getBoolean("car_mode_enabled", true)
@@ -272,27 +272,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Resets individuais para cada orientação física do display
-        btnRestoreDolphinLand.setOnClickListener {
-            editTapXLand.setText("1712")
-            editTapYLand.setText("1044")
-            prefs.edit().putInt("tap_x_land", 1712).putInt("tap_y_land", 1044).apply()
-            Toast.makeText(this, "Padrão Paisagem Salvo!", Toast.LENGTH_SHORT).show()
-        }
-
-        btnRestoreDolphinPort.setOnClickListener {
-            editTapXPort.setText("1044")
-            editTapYPort.setText("1712")
-            prefs.edit().putInt("tap_x_port", 1044).putInt("tap_y_port", 1712).apply()
-            Toast.makeText(this, "Padrão Retrato Salvo!", Toast.LENGTH_SHORT).show()
-        }
-
-        val dectectorClickAction = View.OnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                AccessibilityAdbHelper.ativarAcessibilidadeViaAdb(AdbShellExecutor(this@MainActivity))
-            }
-        }
-        btnCaptureClickLand.setOnClickListener(dectectorClickAction)
-        btnCaptureClickPort.setOnClickListener(dectectorClickAction)
+//        btnRestoreDolphinLand.setOnClickListener {
+//            editTapXLand.setText("1712")
+//            editTapYLand.setText("1044")
+//            prefs.edit().putInt("tap_x_land", 1712).putInt("tap_y_land", 1044).apply()
+//            Toast.makeText(this, "Padrão Paisagem Salvo!", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        btnRestoreDolphinPort.setOnClickListener {
+//            editTapXPort.setText("1044")
+//            editTapYPort.setText("1712")
+//            prefs.edit().putInt("tap_x_port", 1044).putInt("tap_y_port", 1712).apply()
+//            Toast.makeText(this, "Padrão Retrato Salvo!", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        val dectectorClickAction = View.OnClickListener {
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                AccessibilityAdbHelper.ativarAcessibilidadeViaAdb(AdbShellExecutor(this@MainActivity))
+//            }
+//        }
+//        btnCaptureClickLand.setOnClickListener(dectectorClickAction)
+//        btnCaptureClickPort.setOnClickListener(dectectorClickAction)
 
         savedApp1?.let { pkg ->
             appList.find { it.packageName == pkg }?.let { app ->
@@ -328,34 +328,35 @@ class MainActivity : AppCompatActivity() {
         btnRun.setOnClickListener {
             val app1 = selectedApp1?.packageName ?: ""
             val app2 = selectedApp2?.packageName ?: ""
-            val xLandStr = editTapXLand.text.toString().trim()
-            val yLandStr = editTapYLand.text.toString().trim()
-            val xPortStr = editTapXPort.text.toString().trim()
-            val yPortStr = editTapYPort.text.toString().trim()
+//            val xLandStr = editTapXLand.text.toString().trim()
+//            val yLandStr = editTapYLand.text.toString().trim()
+//            val xPortStr = editTapXPort.text.toString().trim()
+//            val yPortStr = editTapYPort.text.toString().trim()
 
             if (app1.isEmpty() || app2.isEmpty() ||
                 xLandStr.isEmpty() || yLandStr.isEmpty() ||
                 xPortStr.isEmpty() || yPortStr.isEmpty()) {
                 AlertDialog.Builder(this)
                     .setTitle("Configuração Incompleta")
-                    .setMessage("Por favor, selecione os aplicativos e garanta que todas as coordenadas estejam preenchidas.")
+//                    .setMessage("Por favor, selecione os aplicativos e garanta que todas as coordenadas estejam preenchidas.")
+                    .setMessage("Por favor, selecione os aplicativos.")
                     .setPositiveButton("OK", null)
                     .show()
                 return@setOnClickListener
             }
 
-            val tapXLand = xLandStr.toIntOrNull() ?: 1712
-            val tapYLand = yLandStr.toIntOrNull() ?: 1044
-            val tapXPort = xPortStr.toIntOrNull() ?: 1044
-            val tapYPort = yPortStr.toIntOrNull() ?: 1712
+//            val tapXLand = xLandStr.toIntOrNull() ?: 1712
+//            val tapYLand = yLandStr.toIntOrNull() ?: 1044
+//            val tapXPort = xPortStr.toIntOrNull() ?: 1044
+//            val tapYPort = yPortStr.toIntOrNull() ?: 1712
 
             getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE).edit().apply {
                 putString("app1", app1)
                 putString("app2", app2)
-                putInt("tap_x_land", tapXLand)
-                putInt("tap_y_land", tapYLand)
-                putInt("tap_x_port", tapXPort)
-                putInt("tap_y_port", tapYPort)
+//                putInt("tap_x_land", tapXLand)
+//                putInt("tap_y_land", tapYLand)
+//                putInt("tap_x_port", tapXPort)
+//                putInt("tap_y_port", tapYPort)
                 apply()
             }
             // CORREÇÃO: Passando apenas os 3 parâmetros válidos exigidos pela assinatura de rodarFluxo
@@ -404,19 +405,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(captureReceiver, IntentFilter("com.fofinhos.autosplit.COORDINATES_CAPTURED"), RECEIVER_NOT_EXPORTED)
-            registerReceiver(countdownReceiver, IntentFilter("com.fofinhos.autosplit.CAPTURE_COUNTDOWN"), RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(captureReceiver, IntentFilter("com.fofinhos.autosplit.COORDINATES_CAPTURED"))
-            registerReceiver(countdownReceiver, IntentFilter("com.fofinhos.autosplit.CAPTURE_COUNTDOWN"))
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+//            registerReceiver(captureReceiver, IntentFilter("com.fofinhos.autosplit.COORDINATES_CAPTURED"), RECEIVER_NOT_EXPORTED)
+//            registerReceiver(countdownReceiver, IntentFilter("com.fofinhos.autosplit.CAPTURE_COUNTDOWN"), RECEIVER_NOT_EXPORTED)
+//        } else {
+//            registerReceiver(captureReceiver, IntentFilter("com.fofinhos.autosplit.COORDINATES_CAPTURED"))
+//            registerReceiver(countdownReceiver, IntentFilter("com.fofinhos.autosplit.CAPTURE_COUNTDOWN"))
+//        }
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(captureReceiver)
-        unregisterReceiver(countdownReceiver)
+//        unregisterReceiver(captureReceiver)
+//        unregisterReceiver(countdownReceiver)
     }
 
     override fun onDestroy() {
