@@ -72,30 +72,48 @@ object AutomationManager {
 //
 
                 // =========================================================================
-// 1. Abre o Primeiro App no modo SPLIT_SCREEN_PRIMARY (3)
-// =========================================================================
-                Log.d(TAG, "Ativando App 1 no lado primário: $app1")
-
-// Resolve o componente exato do Launcher (com a categoria correta)
-                val cmdResolve1 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1"
-
-// Executa o am start com windowingMode 3 (SPLIT_SCREEN_PRIMARY)
-                adbExecutor.executarSync("am start --user 0 --windowingMode 3 -n \$($cmdResolve1)")
-
-// Espera o sistema criar o dock e estabilizar a metade do ecrã
-                delay(2000)
+// 1. Definimos uma constante rápida para o caractere de cifrão.
+// Isto impede que o compilador do Kotlin tente ler as variáveis do Shell como variáveis Kotlin.
+                val d = "$"
 
 // =========================================================================
-// 2. Abre o Segundo App normalmente (ele vai cair no espaço adjacente livre)
+// 1. Gerir o APP 1 (Lado Primário - Stack 3)
 // =========================================================================
-                Log.d(TAG, "Ativando App 2 no lado adjacente: $app2")
+                Log.d(TAG, "Processando App 1: $app1")
 
-// Resolve o componente exato do segundo Launcher
-                val cmdResolve2 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1"
+                val cmdApp1 = """
+    TASK_ID=${d}(dumpsys activity activities | grep -E "(TaskRecord|Task).*#.*$app1" | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
+    if [ ! -z "${d}TASK_ID" ]; then
+        echo "App1 em segundo plano. Task ID: ${d}TASK_ID. Movendo para split...";
+        am stack move-task ${d}TASK_ID 3 true;
+    else
+        echo "App1 fechado. Iniciando do zero...";
+        am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
+    fi
+""".trimIndent().replace("\n", " ")
 
-// Abre normalmente (SEM windowingMode). O Android coloca-o automaticamente no lado livre!
-                adbExecutor.executarSync("am start --user 0 -n \$($cmdResolve2) --activity-brought-to-front")
+                adbExecutor.executarSync(cmdApp1)
 
+// Tempo para o sistema reorganizar as janelas e criar o dock
+                delay(1500)
+
+// =========================================================================
+// 2. Gerir o APP 2 (Lado Secundário - Stack 4)
+// =========================================================================
+                Log.d(TAG, "Processando App 2: $app2")
+
+                val cmdApp2 = """
+    TASK_ID=${d}(dumpsys activity activities | grep -E "(TaskRecord|Task).*#.*$app2" | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
+    if [ ! -z "${d}TASK_ID" ]; then
+        echo "App2 em segundo plano. Task ID: ${d}TASK_ID. Movendo para split...";
+        am stack move-task ${d}TASK_ID 4 true;
+    else
+        echo "App2 fechado. Iniciando do zero...";
+        am start --user 0 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front;
+    fi
+""".trimIndent().replace("\n", " ")
+
+                adbExecutor.executarSync(cmdApp2)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
                 }
