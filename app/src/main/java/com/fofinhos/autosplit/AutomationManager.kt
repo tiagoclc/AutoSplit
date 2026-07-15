@@ -58,23 +58,38 @@ object AutomationManager {
                 val d = "$"
 
                 // =========================================================================
-// 1. Abre o Primeiro App limpando a Task anterior mas mantendo o processo
-// =========================================================================
-                Log.d(TAG, "Ativando App 1 com Reset de Task: $app1")
+                // 1. GERIR O APP 1 (Lado Primário - Stack 3)
+                // =========================================================================
+                Log.d(TAG, "Processando App 1: $app1")
 
-// Adicionada a flag -f 0x10008000 para limpar o estado fullscreen anterior
-                adbExecutor.executarSync("am start --user 0 -f 0x10008000 --windowingMode 3 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1)")
+                // Este script em lote faz toda a tomada de decisão no terminal do Android:
+                // - Se o App 1 está aberto: abre a GhostActivity, espera 1s (sleep) e move o App 1.
+                // - Se o App 1 está fechado: abre-o diretamente em split-screen (com windowingMode 3).
+                val cmdApp1 = """
+                    TASK_ID=${d}(dumpsys activity activities | awk '/TaskRecord|Task\{/{t=${d}0} index(${d}0, "$app1") > 0 {print t; exit}' | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
+                    if [ ! -z "${d}TASK_ID" ]; then
+                        log -t AutoSplitManager "App1 em segundo plano (Task: ${d}TASK_ID). Inicializando GhostActivity para criar a Stack...";
+                        am start --user 0 --windowingMode 3 -n com.fofinhos.autosplit/.GhostActivity;
+                        sleep 1;
+                        log -t AutoSplitManager "Movendo App1 para stack 3...";
+                        am start --user 0 -f 0x10008000 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
+                    else
+                        log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
+                        am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
+                    fi
+                """.trimIndent().replace("\n", " ")
 
-// Espera o sistema criar o dock e estabilizar a metade do ecrã
-                delay(2000)
+                adbExecutor.executarSync(cmdApp1)
 
-// =========================================================================
-// 2. Abre o Segundo App limpando a Task anterior
-// =========================================================================
-                Log.d(TAG, "Ativando App 2 com Reset de Task: $app2")
+                // Tempo para o sistema processar a criação da janela e estabilizar o lado esquerdo
+                delay(1500)
 
-// Adicionada a flag -f 0x10008000 também no segundo app
-                adbExecutor.executarSync("am start --user 0 -f 0x10008000 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front")
+                // =========================================================================
+                // 2. GERIR O APP 2 (Lado Secundário - Stack 4)
+                // =========================================================================
+                Log.d(TAG, "Processando App 2: $app2")
+
+                adbExecutor.executarSync("am start --user 0 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
