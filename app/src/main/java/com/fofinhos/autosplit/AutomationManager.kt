@@ -80,7 +80,7 @@ object AutomationManager {
                 val cmdResolve1 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1"
 
 // Executa o am start com windowingMode 3 (SPLIT_SCREEN_PRIMARY)
-                adbExecutor.executarSync("am start --user 0 --windowingMode 3 -n \$($cmdResolve1)")
+                adbExecutor.executarSync("am start --user 0 --windowingMode 3 -n $cmdResolve1")
 
 // Espera o sistema criar o dock e estabilizar a metade do ecrã
                 delay(2000)
@@ -94,7 +94,7 @@ object AutomationManager {
                 val cmdResolve2 = "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1"
 
 // Abre normalmente (SEM windowingMode). O Android coloca-o automaticamente no lado livre!
-                adbExecutor.executarSync("am start --user 0 -n \$($cmdResolve2) --activity-brought-to-front")
+                adbExecutor.executarSync("am start --user 0 -n $cmdResolve2 --activity-brought-to-front")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
