@@ -333,9 +333,11 @@ class MainActivity : AppCompatActivity() {
 //            val xPortStr = editTapXPort.text.toString().trim()
 //            val yPortStr = editTapYPort.text.toString().trim()
 
-            if (app1.isEmpty() || app2.isEmpty() ||
-                xLandStr.isEmpty() || yLandStr.isEmpty() ||
-                xPortStr.isEmpty() || yPortStr.isEmpty()) {
+//            if (app1.isEmpty() || app2.isEmpty() ||
+//                xLandStr.isEmpty() || yLandStr.isEmpty() ||
+//                xPortStr.isEmpty() || yPortStr.isEmpty()) {
+
+            if (app1.isEmpty() || app2.isEmpty()) {
                 AlertDialog.Builder(this)
                     .setTitle("Configuração Incompleta")
 //                    .setMessage("Por favor, selecione os aplicativos e garanta que todas as coordenadas estejam preenchidas.")

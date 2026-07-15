@@ -58,18 +58,18 @@ object AutomationManager {
                 // =========================================================================
                 // RECONHECIMENTO DINÂMICO DE ORIENTAÇÃO EM TEMPO REAL (Antes do Toque)
                 // =========================================================================
-                val currentOrientation = appContext.resources.configuration.orientation
-
-                val (tapX, tapY) = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-                    // Se a tela estiver em pé, busca as coordenadas salvas no Card Retrato
-                    Pair(prefs.getInt("tap_x_port", 1044), prefs.getInt("tap_y_port", 1712))
-                } else {
-                    // Se estiver deitada, busca as coordenadas salvas no Card Paisagem
-                    Pair(prefs.getInt("tap_x_land", 1712), prefs.getInt("tap_y_land", 1044))
-                }
-
-                Log.d(TAG, "Orientação real detectada: ${if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) "Retrato" else "Paisagem"}")
-
+//                val currentOrientation = appContext.resources.configuration.orientation
+//
+//                val (tapX, tapY) = if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+//                    // Se a tela estiver em pé, busca as coordenadas salvas no Card Retrato
+//                    Pair(prefs.getInt("tap_x_port", 1044), prefs.getInt("tap_y_port", 1712))
+//                } else {
+//                    // Se estiver deitada, busca as coordenadas salvas no Card Paisagem
+//                    Pair(prefs.getInt("tap_x_land", 1712), prefs.getInt("tap_y_land", 1044))
+//                }
+//
+//                Log.d(TAG, "Orientação real detectada: ${if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) "Retrato" else "Paisagem"}")
+//
 
                 // 1. Abre ou traz à tona o Primeiro App
                 Log.d(TAG, "Ativando App 1: $app1")
@@ -88,7 +88,7 @@ object AutomationManager {
                 // =========================================================================
 
                 // 2. Executa o toque (TAP) usando as coordenadas dinâmicas resolvidas acima
-                Log.d(TAG, "Executando TAP via ADB para Split Screen em $tapX, $tapY")
+//                Log.d(TAG, "Executando TAP via ADB para Split Screen em $tapX, $tapY")
 //                adbExecutor.executarSync("input tap $tapX $tapY")
 //
 //                // Espera a animação do sistema
