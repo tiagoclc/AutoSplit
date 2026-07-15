@@ -78,7 +78,9 @@ object AutomationManager {
 
                 // Usamos --windowingMode 1 (Fullscreen) para permitir o Split Screen nativo do DiLink
                 // Adicionamos extras de DOCK_STATE e CAR_MODE para tentar forçar a interface do app
-                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 3 --activity-brought-to-front")
+//                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app1 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 3 --activity-brought-to-front")
+                adbExecutor.executarSync("am start --user 0 -n $(cmd package resolve-activity --brief $app1 | tail -n 1) --windowingMode 3 --activity-brought-to-front")
+
 
                 // Espera o app carregar ou estabilizar na frente
                 delay(2000)
@@ -87,22 +89,24 @@ object AutomationManager {
 
                 // 2. Executa o toque (TAP) usando as coordenadas dinâmicas resolvidas acima
                 Log.d(TAG, "Executando TAP via ADB para Split Screen em $tapX, $tapY")
-                adbExecutor.executarSync("input tap $tapX $tapY")
-
-                // Espera a animação do sistema
-                delay(2500)
+//                adbExecutor.executarSync("input tap $tapX $tapY")
+//
+//                // Espera a animação do sistema
+//                delay(2500)
 
                 // 3. Abre ou traz à tona o Segundo App
                 Log.d(TAG, "Ativando App 2: $app2")
-                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app2 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 1 --activity-brought-to-front")
+//                adbExecutor.executarSync("am start -n $(cmd package resolve-activity --brief $app2 | tail -n 1) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER $carFlag $extraFlags --windowingMode 4 --activity-brought-to-front")
+                adbExecutor.executarSync("am start --user 0 -n $(cmd package resolve-activity --brief $app2 | tail -n 1) --windowingMode 4 --activity-brought-to-front")
+//                adbExecutor.executarSync("monkey -p $app2 -c android.intent.category.LAUNCHER 1")
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
                 }
-                delay(1000)
-
-                // Executa a limpeza (reset do modo carro) após a automação terminar
-                limparDisplays(appContext)
+//                delay(1000)
+//
+//                // Executa a limpeza (reset do modo carro) após a automação terminar
+//                limparDisplays(appContext)
 
             } catch (e: Throwable) {
                 Log.e(TAG, "Erro na automação: ${e.message}", e)
