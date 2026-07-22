@@ -48,8 +48,11 @@
 
         <activity
             android:name=".GhostActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:resizeableActivity="true"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:exported="true" />
 
 
 

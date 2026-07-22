@@ -41,11 +41,6 @@ object AutomationManager {
                 // Se o seletor do botão flutuante está ativado, garante que o botão apareça
                 val prefs = appContext.getSharedPreferences("autosplit_prefs", Context.MODE_PRIVATE)
                 val floatingEnabled = prefs.getBoolean("floating_button_enabled", false)
-                if (floatingEnabled && !FloatingService.isRunning) {
-                    withContext(Dispatchers.Main) {
-                        appContext.startService(Intent(appContext, FloatingService::class.java))
-                    }
-                }
 
                 // Constante para evitar que o Kotlin interpole variáveis de ambiente do Shell do Android
                 val d = "$"
@@ -61,14 +56,11 @@ object AutomationManager {
                 val cmdApp1 = """
                     TASK_ID=${d}(dumpsys activity activities | awk '/TaskRecord|Task\{/{t=${d}0} index(${d}0, "$app1") > 0 {print t; exit}' | grep -oE "#[0-9]+" | head -n 1 | tr -d '#');
                     if [ ! -z "${d}TASK_ID" ]; then
-                        log -t AutoSplitManager "App1 em segundo plano (Task: ${d}TASK_ID). Inicializando GhostActivity para criar a Stack...";
                         am start --user 0 --windowingMode 3 -n com.fofinhos.autosplit/.GhostActivity;
                         sleep 1;
                         STACK_ID=${d}(am stack list | awk '/Stack id=/ {split(${d}2, a, "="); id=a[2]} /mWindowingMode=split-screen-primary/ {print id; exit}');
-                        log -t AutoSplitManager "Movendo App1 para stack do split primary...";     
                         am stack move-task ${d}TASK_ID ${d}STACK_ID true;
                     else
-                        log -t AutoSplitManager "App1 fechado. Iniciando diretamente no modo split-screen...";
                         am start --user 0 --windowingMode 3 -n ${d}(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app1 | tail -n 1);
                     fi
                 """.trimIndent().replace("\n", " ")
@@ -100,6 +92,11 @@ object AutomationManager {
 
                 adbExecutor.executarSync("am start --user 0 -n \$(cmd package resolve-activity --brief -c android.intent.category.LAUNCHER $app2 | tail -n 1) --activity-brought-to-front")
 
+                if (floatingEnabled && !FloatingService.isRunning) {
+                    withContext(Dispatchers.Main) {
+                        appContext.startService(Intent(appContext, FloatingService::class.java))
+                    }
+                }
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(appContext, "Sequência de Automação Concluída!", Toast.LENGTH_SHORT).show()
