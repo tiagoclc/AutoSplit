@@ -34,7 +34,7 @@
             android:name=".AutomationActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_play"
-            android:label="Rodar AutoSplit"
+            android:label="AutoSplit"
             android:taskAffinity=""
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
