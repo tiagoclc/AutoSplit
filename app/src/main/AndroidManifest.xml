@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.ENTER_CAR_MODE" />
 
     <application
         android:allowBackup="true"
@@ -22,8 +21,25 @@
             android:name=".MainActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
+            android:label="Ajustes AutoSplit"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:theme="@style/Theme_AutoSplit_Invisible">
+            android:theme="@style/Theme.AutoSplit">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".AutomationActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_play"
+            android:label="Rodar AutoSplit"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,11 +48,10 @@
 
         <activity
             android:name=".GhostActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:resizeableActivity="true"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:exported="true" />
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+
 
         <service
             android:name=".FloatingService"

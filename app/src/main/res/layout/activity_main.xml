@@ -52,7 +52,7 @@
                         android:id="@+id/img_app1_icon"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_weight="1.5"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
 
@@ -60,7 +60,7 @@
                         android:id="@+id/txt_app1_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_weight="1.5"
                         android:text="App 1 (Esquerda)"
                         android:textColor="#E9EDEF"
                         android:textStyle="bold"
@@ -70,7 +70,7 @@
                         app:autoSizeTextType="uniform"
                         app:autoSizeMinTextSize="12sp"
                         app:autoSizeMaxTextSize="24sp"
-                        android:layout_marginTop="2dp"/>
+                        android:layout_marginTop="4dp"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app1"
@@ -107,7 +107,7 @@
                         android:id="@+id/img_app2_icon"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_weight="1.5"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_question_mark" />
 
@@ -115,7 +115,7 @@
                         android:id="@+id/txt_app2_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_weight="1.5"
                         android:text="App 2 (Direita)"
                         android:textColor="#E9EDEF"
                         android:textStyle="bold"
@@ -125,7 +125,7 @@
                         app:autoSizeTextType="uniform"
                         app:autoSizeMinTextSize="12sp"
                         app:autoSizeMaxTextSize="24sp"
-                        android:layout_marginTop="2dp"/>
+                        android:layout_marginTop="4dp"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select_app2"
@@ -143,167 +143,7 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="8dp"-->
-<!--            app:cardBackgroundColor="#1E2A32"-->
-<!--            app:cardCornerRadius="12dp"-->
-<!--            app:strokeWidth="1dp"-->
-<!--            app:strokeColor="#2A3942">-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="12dp">-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Coordenadas - Modo Paisagem:"-->
-<!--                    android:textColor="#8696A0"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:textSize="13sp"-->
-<!--                    android:layout_marginBottom="4dp"/>-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical">-->
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:hint="X"-->
-<!--                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"-->
-<!--                        app:hintTextColor="#00A884"-->
-<!--                        app:boxStrokeColor="#00A884">-->
-<!--                        <com.google.android.material.textfield.TextInputEditText-->
-<!--                            android:id="@+id/edit_tap_x_land"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:inputType="number"-->
-<!--                            android:textColor="#FFFFFF"-->
-<!--                            android:text="1712"/>-->
-<!--                    </com.google.android.material.textfield.TextInputLayout>-->
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:layout_marginStart="8dp"-->
-<!--                        android:hint="Y"-->
-<!--                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"-->
-<!--                        app:hintTextColor="#00A884"-->
-<!--                        app:boxStrokeColor="#00A884">-->
-<!--                        <com.google.android.material.textfield.TextInputEditText-->
-<!--                            android:id="@+id/edit_tap_y_land"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:inputType="number"-->
-<!--                            android:textColor="#FFFFFF"-->
-<!--                            android:text="1044"/>-->
-<!--                    </com.google.android.material.textfield.TextInputLayout>-->
-<!--                    <com.google.android.material.button.MaterialButton-->
-<!--                        android:id="@+id/btn_restore_dolphin_land"-->
-<!--                        style="@style/Widget.Material3.Button.TextButton"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="4dp"-->
-<!--                        android:text="Padrão"-->
-<!--                        android:textColor="#00A884"-->
-<!--                        android:textSize="12sp" />-->
-<!--                    <com.google.android.material.button.MaterialButton-->
-<!--                        android:id="@+id/btn_capture_click_land"-->
-<!--                        style="@style/Widget.Material3.Button.TextButton"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="4dp"-->
-<!--                        android:text="Capturar"-->
-<!--                        android:textColor="#00A884"-->
-<!--                        android:textSize="12sp" />-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
-<!--        </com.google.android.material.card.MaterialCardView>-->
 
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="8dp"-->
-<!--            app:cardBackgroundColor="#1E2A32"-->
-<!--            app:cardCornerRadius="12dp"-->
-<!--            app:strokeWidth="1dp"-->
-<!--            app:strokeColor="#2A3942">-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="12dp">-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Coordenadas - Modo Retrato:"-->
-<!--                    android:textColor="#8696A0"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:textSize="13sp"-->
-<!--                    android:layout_marginBottom="4dp"/>-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical">-->
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:hint="X"-->
-<!--                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"-->
-<!--                        app:hintTextColor="#00A884"-->
-<!--                        app:boxStrokeColor="#00A884">-->
-<!--                        <com.google.android.material.textfield.TextInputEditText-->
-<!--                            android:id="@+id/edit_tap_x_port"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:inputType="number"-->
-<!--                            android:textColor="#FFFFFF"-->
-<!--                            android:text="1044"/>-->
-<!--                    </com.google.android.material.textfield.TextInputLayout>-->
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:layout_marginStart="8dp"-->
-<!--                        android:hint="Y"-->
-<!--                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"-->
-<!--                        app:hintTextColor="#00A884"-->
-<!--                        app:boxStrokeColor="#00A884">-->
-<!--                        <com.google.android.material.textfield.TextInputEditText-->
-<!--                            android:id="@+id/edit_tap_y_port"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:inputType="number"-->
-<!--                            android:textColor="#FFFFFF"-->
-<!--                            android:text="1712"/>-->
-<!--                    </com.google.android.material.textfield.TextInputLayout>-->
-<!--                    <com.google.android.material.button.MaterialButton-->
-<!--                        android:id="@+id/btn_restore_dolphin_port"-->
-<!--                        style="@style/Widget.Material3.Button.TextButton"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="4dp"-->
-<!--                        android:text="Padrão"-->
-<!--                        android:textColor="#00A884"-->
-<!--                        android:textSize="12sp" />-->
-<!--                    <com.google.android.material.button.MaterialButton-->
-<!--                        android:id="@+id/btn_capture_click_port"-->
-<!--                        style="@style/Widget.Material3.Button.TextButton"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="4dp"-->
-<!--                        android:text="Capturar"-->
-<!--                        android:textColor="#00A884"-->
-<!--                        android:textSize="12sp" />-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
-<!--        </com.google.android.material.card.MaterialCardView>-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -363,17 +203,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Modo Carro"
+                        android:text="Botão Flutuante"
                         android:textColor="#E9EDEF"
                         android:textSize="13sp"
                         android:textStyle="bold"/>
                     <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switch_car_mode"
+                        android:id="@+id/switch_floating_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/green_byd"
-                        app:trackTint="@color/bg_card"
-                        android:checked="true"/>
+                        app:trackTint="@color/bg_card"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -382,7 +221,7 @@
             android:id="@+id/btn_run_automation"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Rodar"
+            android:text="Rodar Agora"
             android:textSize="15sp"
             android:textStyle="bold"
             app:backgroundTint="#00A884"
